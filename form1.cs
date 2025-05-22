@@ -1,83 +1,102 @@
 using Microsoft.VisualBasic.ApplicationServices;
+using System.Text;
 using System.Text.Json;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form1 : Form
     {
-
-        public static User CurrentUser;
-
-
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void ClearRegistrationFields()
         {
-            var users = DataService.LoadUsers();
-            var user = users.FirstOrDefault(u => u.Username == txtUsername.Text && u.Password == txtPassword.Text);
-
-            if (user != null)
-            {
-                CurrentUser = user;
-                this.Hide();
-                new Form2().Show();
-            }
-            else
-            {
-                MessageBox.Show("Неверные данные!");
-            }
-        }
-    }
-
-    public class User
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Role { get; set; } 
-    }
-
-    public class Book
-    {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string ISBN { get; set; }
-        public bool IsAvailable { get; set; }
-    }
-
-    public static class DataService
-    {
-        private static string usersFile = "users.json";
-        private static string booksFile = "books.json";
-
-        public static List<User> LoadUsers()
-        {
-            if (File.Exists(usersFile))
-            {
-                return JsonSerializer.Deserialize<List<User>>(File.ReadAllText(usersFile));
-            }
-            return new List<User>();
+            txtUsername.Clear();
+            txtPassword.Clear();
         }
 
-        public static List<Book> LoadBooks()
+        private void btnRegister_Click_1(object sender, EventArgs e)
         {
-            if (File.Exists(booksFile))
+            string username = txtUsername.Text;
+            string password = txtPassword.Text;
+            string role = txtRole.Text;
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(role))
             {
-                return JsonSerializer.Deserialize<List<Book>>(File.ReadAllText(booksFile));
+                MessageBox.Show("Пожалуйста, заполните все поля",
+                                "Ошибка ввода",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return;
             }
-            return new List<Book>();
-        }
 
-        public static void SaveUsers(List<User> users)
-        {
-            File.WriteAllText(usersFile, JsonSerializer.Serialize(users));
-        }
+            if (password.Length < 6)
+            {
+                MessageBox.Show("Пароль должен содержать минимум 6 символов",
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
 
-        public static void SaveBooks(List<Book> books)
+            try
+            {
+                if (UserExists(username))
+                {
+                    MessageBox.Show("Пользователь с таким именем уже существует",
+                                    "Ошибка",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                    return;
+                }
+
+                RegisterUser(username, password, role);
+
+                MessageBox.Show("Регистрация прошла успешно! Теперь вы можете войти.",
+                                "Успех",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+
+                Form2 Forms = new Form2();
+                Forms.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при регистрации: {ex.Message}",
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+        }
+        private bool UserExists(string username)
         {
-            File.WriteAllText(booksFile, JsonSerializer.Serialize(books)); ;
+            List<string> existingUsers = new List<string> { };
+
+            return existingUsers.Contains(username.ToLower());
+        }
+        private void RegisterUser(string username, string password, string role)
+        {
+            string filePath = "users.txt";
+
+            string userRecord = $"{username},{password},{role}";
+
+            if (File.Exists(filePath))
+            {
+                string[] existingUsers = File.ReadAllLines(filePath);
+                foreach (string user in existingUsers)
+                {
+                    string[] parts = user.Split(',');
+                    if (parts[0] == username)
+                    {
+                        MessageBox.Show("Пользователь с таким именем уже существует!");
+                        return;
+                    }
+                }
+            }
+            File.AppendAllText(filePath, userRecord + Environment.NewLine);
+            MessageBox.Show("Регистрация прошла успешно!");
         }
     }
 }
