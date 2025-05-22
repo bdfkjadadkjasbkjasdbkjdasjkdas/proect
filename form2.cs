@@ -8,33 +8,85 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form2 : Form
     {
+        private const string UsersFile = "users.txt";
+        private TextBox txtRoleDisplay;
+
         public Form2()
         {
             InitializeComponent();
-            UpdateBookList();
-
-            btnManageUsers.Visible = Form1.CurrentUser.Role == "Admin";
-            btnAddBook.Visible = Form1.CurrentUser.Role != "Client";
         }
 
-        private void UpdateBookList()
+        private void Form6_Load(object sender, EventArgs e)
         {
-            dgvBooks.DataSource = DataService.LoadBooks();
+
         }
 
-        private void btnAddBook_Click(object sender, EventArgs e)
+        private void LoginBtn_Click(object sender, EventArgs e)
         {
-            new Form3().ShowDialog();
-            UpdateBookList();
+            try
+            {
+                string username = txtUsername.Text;
+                string password = txtPassword.Text;
+
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                {
+                    MessageBox.Show("Введите логин и пароль", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string userRole = ValidateUser(username, password);
+                if (userRole != null)
+                {
+                    txtRoleDisplay.Text = $"Ваша роль: {userRole}";
+                    txtRoleDisplay.Visible = true;
+                    MessageBox.Show($"Добро пожаловать, {username}!", "Успешный вход",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Неверный логин или пароль", "Ошибка входа",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void btnManageUsers_Click(object sender, EventArgs e)
+
+        private string ValidateUser(string username, string password)
         {
-            new Form4().ShowDialog();
+            try
+            {
+                if (!File.Exists(UsersFile))
+                {
+                    return null;
+                }
+
+                string[] lines = File.ReadAllLines(UsersFile);
+                foreach (string line in lines)
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 3 && parts[0] == username && parts[1] == password)
+                    {
+                        return parts[2]; 
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при чтении файла: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
         }
     }
 }
