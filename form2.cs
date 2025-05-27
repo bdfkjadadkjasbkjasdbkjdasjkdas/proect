@@ -73,6 +73,24 @@ namespace WinFormsApp5
                     labelRole.Visible = true;
                     MessageBox.Show($"Добро пожаловать, {username}!", "Успешный вход",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    if (userRole == "admin")
+                    {
+                        Form3 adminForm = new Form3();
+                        adminForm.Show();
+                    }
+                    else if (userRole == "client")
+                    {
+                        Form4 clientForm = new Form4();
+                        clientForm.Show();
+                    }
+                    else if (userRole == "worker")
+                    {
+                        Form5 workerForm = new Form5();
+                        workerForm.Show();
+                    }
+
+                        this.Hide(); 
                 }
                 else
                 {
