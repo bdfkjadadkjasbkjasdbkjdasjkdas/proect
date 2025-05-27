@@ -10,7 +10,7 @@ namespace WinFormsApp5
         public Form1()
         {
             InitializeComponent();
-            cmbRole.Items.AddRange(new string[] { "admin", "client" });
+            cmbRole.Items.AddRange(new string[] { "admin", "worker", "client" });
             cmbRole.SelectedIndex = 0; 
         }
 
@@ -76,9 +76,9 @@ namespace WinFormsApp5
             }
 
             
-            if (role != "admin" && role != "client")
+            if (role != "admin" && role != "client" && role != "worker")
             {
-                MessageBox.Show("Роль может быть только 'admin' или 'client'",
+                MessageBox.Show("Роль может быть только 'admin',  'client' или 'worker'",
                                 "Недопустимая роль",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
