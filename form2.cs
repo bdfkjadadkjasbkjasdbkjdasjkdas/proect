@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form2 : Form
     {
@@ -17,7 +17,7 @@ namespace WinFormsApp11
         public Form2()
         {
             InitializeComponent();
-            labelRole.Visible = false; 
+            labelRole.Visible = false;
         }
 
         private void Form6_Load(object sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace WinFormsApp11
             }
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void LoginBtn_Click(object sender, EventArgs e)
         {
             try
             {
@@ -86,6 +86,11 @@ namespace WinFormsApp11
                 MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
