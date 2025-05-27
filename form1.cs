@@ -1,22 +1,24 @@
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Text;
 using System.Text.Json;
-using WinFormsApp11;
+using WinFormsApp5;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form1 : Form
     {
         public Form1()
         {
             InitializeComponent();
+            cmbRole.Items.AddRange(new string[] { "admin", "client" });
+            cmbRole.SelectedIndex = 0; 
         }
 
         private void ClearRegistrationFields()
         {
             txtUsername.Clear();
             txtPassword.Clear();
-            txtRole.Clear();
+            cmbRole.SelectedIndex = 0;
         }
 
         private bool UserExists(string username)
@@ -24,7 +26,9 @@ namespace WinFormsApp11
             string filePath = "users.txt";
 
             if (!File.Exists(filePath))
+            {
                 return false;
+            }
 
             string[] existingUsers = File.ReadAllLines(filePath);
             foreach (string user in existingUsers)
@@ -37,7 +41,6 @@ namespace WinFormsApp11
             }
             return false;
         }
-
         private void RegisterUser(string username, string password, string role)
         {
             string filePath = "users.txt";
@@ -46,12 +49,13 @@ namespace WinFormsApp11
             File.AppendAllText(filePath, userRecord + Environment.NewLine);
         }
 
-        private void btnRegister_Click(object sender, EventArgs e)
+        private void btnRegister_Click_1(object sender, EventArgs e)
         {
             string username = txtUsername.Text;
             string password = txtPassword.Text;
-            string role = txtRole.Text;
+            string role = cmbRole.SelectedItem?.ToString();
 
+            
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(role))
             {
                 MessageBox.Show("Пожалуйста, заполните все поля",
@@ -61,10 +65,21 @@ namespace WinFormsApp11
                 return;
             }
 
+            
             if (password.Length < 6)
             {
                 MessageBox.Show("Пароль должен содержать минимум 6 символов",
                                 "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
+
+            
+            if (role != "admin" && role != "client")
+            {
+                MessageBox.Show("Роль может быть только 'admin' или 'client'",
+                                "Недопустимая роль",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 return;
@@ -78,8 +93,8 @@ namespace WinFormsApp11
                                     "Ошибка",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
-                    ClearRegistrationFields(); 
-                    return; 
+                    ClearRegistrationFields();
+                    return;
                 }
 
                 RegisterUser(username, password, role);
