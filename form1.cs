@@ -11,7 +11,7 @@ namespace WinFormsApp5
         {
             InitializeComponent();
             cmbRole.Items.AddRange(new string[] { "admin", "worker", "client" });
-            cmbRole.SelectedIndex = 0; 
+            cmbRole.SelectedIndex = 0;
         }
 
         private void ClearRegistrationFields()
@@ -55,7 +55,7 @@ namespace WinFormsApp5
             string password = txtPassword.Text;
             string role = cmbRole.SelectedItem?.ToString();
 
-            
+
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(role))
             {
                 MessageBox.Show("Пожалуйста, заполните все поля",
@@ -65,7 +65,7 @@ namespace WinFormsApp5
                 return;
             }
 
-            
+
             if (password.Length < 6)
             {
                 MessageBox.Show("Пароль должен содержать минимум 6 символов",
@@ -75,7 +75,7 @@ namespace WinFormsApp5
                 return;
             }
 
-            
+
             if (role != "admin" && role != "client" && role != "worker")
             {
                 MessageBox.Show("Роль может быть только 'admin',  'client' или 'worker'",
@@ -115,6 +115,13 @@ namespace WinFormsApp5
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
             }
+        }
+
+        private void btnLogins_Click(object sender, EventArgs e)
+        {
+            Form2 Forms = new Form2();
+            Forms.Show();
+            this.Hide();
         }
     }
 }
