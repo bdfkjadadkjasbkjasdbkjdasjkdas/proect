@@ -90,7 +90,7 @@ namespace WinFormsApp5
                         workerForm.Show();
                     }
 
-                        this.Hide(); 
+                    this.Hide();
                 }
                 else
                 {
