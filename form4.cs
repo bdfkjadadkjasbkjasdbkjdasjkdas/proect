@@ -26,7 +26,7 @@ namespace WinFormsApp5
             listViewBooks.Columns.Add("Автор", 200);
             listViewBooks.Columns.Add("Год", 150);
             listViewBooks.Columns.Add("Статус", 100);
-        }
+        } 
 
         private void LoadBooks()
         {
