@@ -7,8 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Cryptography;
+using static System.Windows.Forms.DataFormats;
 
-namespace WinFormsApp5
+namespace WinFormsApp11
 {
     public partial class Form2 : Form
     {
@@ -20,8 +22,19 @@ namespace WinFormsApp5
             labelRole.Visible = false;
         }
 
-        private void Form6_Load(object sender, EventArgs e)
+        private string GetHashSHA256(string plainText)
         {
+            string hashText = "";
+            Encoding enc = Encoding.UTF8;
+            using (SHA256Managed hash = new SHA256Managed())
+            {
+                byte[] result = hash.ComputeHash(enc.GetBytes(plainText));
+                foreach (byte item in result)
+                {
+                    hashText += item.ToString("X2");
+                }
+            }
+            return hashText;
         }
 
         private string ValidateUser(string username, string password)
@@ -33,11 +46,12 @@ namespace WinFormsApp5
                     return null;
                 }
 
+                string hashedPassword = GetHashSHA256(password);
                 string[] lines = File.ReadAllLines(UsersFile);
                 foreach (string line in lines)
                 {
                     string[] parts = line.Split(',');
-                    if (parts.Length >= 3 && parts[0] == username && parts[1] == password)
+                    if (parts.Length >= 3 && parts[0] == username && parts[1] == hashedPassword)
                     {
                         return parts[2];
                     }
@@ -52,7 +66,7 @@ namespace WinFormsApp5
             }
         }
 
-        private void LoginBtn_Click(object sender, EventArgs e)
+        private void btnLogin_Click(object sender, EventArgs e)
         {
             try
             {
@@ -108,7 +122,6 @@ namespace WinFormsApp5
 
         private void Form2_Load(object sender, EventArgs e)
         {
-
         }
     }
 }
