@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using WinFormsApp11;
 
-namespace WinFormsApp5
+namespace WinFormsApp11
 {
     public partial class Form5 : Form
     {
         private const string BooksFile = "books.txt";
         private List<Book> books = new List<Book>();
-        private int selectedBookIndex = 0;
+        private int selectedBookIndex;
 
         public Form5()
         {
@@ -116,18 +117,18 @@ namespace WinFormsApp5
             txtYear.Clear();
         }
 
-        private void btnRefresh_Click_1(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadBooks();
             ClearFields();
         }
 
-        private void btnAdd_Click_1(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
-                string.IsNullOrWhiteSpace(txtTitle.Text) ||
-                string.IsNullOrWhiteSpace(txtAuthor.Text) ||
-                string.IsNullOrWhiteSpace(txtYear.Text))
+    string.IsNullOrWhiteSpace(txtTitle.Text) ||
+    string.IsNullOrWhiteSpace(txtAuthor.Text) ||
+    string.IsNullOrWhiteSpace(txtYear.Text))
             {
                 MessageBox.Show("Заполните все поля!");
                 return;
@@ -147,13 +148,8 @@ namespace WinFormsApp5
             MessageBox.Show("Книга добавлена!");
         }
 
-        private void btnEdit_Click_1(object sender, EventArgs e)
+        private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (selectedBookIndex == -1)
-            {
-                MessageBox.Show("Выберите книгу!");
-                return;
-            }
 
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
                 string.IsNullOrWhiteSpace(txtTitle.Text) ||
@@ -179,11 +175,20 @@ namespace WinFormsApp5
         private void btnDelete_Click_1(object sender, EventArgs e)
         {
 
-            if (selectedBookIndex == -1)
+            if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
+                MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                MessageBox.Show("Выберите книгу!");
-                return;
+                books.RemoveAt(selectedBookIndex);
+                SaveBooks();
+                ShowBooks();
+                ClearFields();
+                selectedBookIndex = 0;
+                MessageBox.Show("Книга удалена!");
             }
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
 
             if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
                 MessageBoxButtons.YesNo) == DialogResult.Yes)
