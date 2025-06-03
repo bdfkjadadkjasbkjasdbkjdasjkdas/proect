@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace WinFormsApp5
+namespace WinFormsApp11
 {
     public partial class Form4 : Form
     {
@@ -26,7 +26,7 @@ namespace WinFormsApp5
             listViewBooks.Columns.Add("Автор", 200);
             listViewBooks.Columns.Add("Год", 150);
             listViewBooks.Columns.Add("Статус", 100);
-        } 
+        }
 
         private void LoadBooks()
         {
@@ -96,7 +96,7 @@ namespace WinFormsApp5
             }
         }
 
-        private void btnReturnBook_Click_1(object sender, EventArgs e)
+        private void btnReturnBook_Click(object sender, EventArgs e)
         {
             if (listViewBooks.SelectedItems.Count > 0)
             {
@@ -120,7 +120,7 @@ namespace WinFormsApp5
             }
         }
 
-        private void btnTakeBook_Click_1(object sender, EventArgs e)
+        private void btnTakeBook_Click(object sender, EventArgs e)
         {
             if (listViewBooks.SelectedItems.Count > 0)
             {
@@ -146,7 +146,7 @@ namespace WinFormsApp5
     }
 
     public class Book
-    {
+    { 
         public string Id { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
