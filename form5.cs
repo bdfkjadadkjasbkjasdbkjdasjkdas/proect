@@ -12,10 +12,12 @@ namespace WinFormsApp11
         private const string BooksFile = "books.txt";
         private List<Book> books = new List<Book>();
         private int selectedBookIndex;
+        private string currentUser;
 
-        public Form5()
+        public Form5(string username)
         {
             InitializeComponent();
+            currentUser = username;
             SetupListView();
             LoadBooks();
         }
@@ -28,6 +30,7 @@ namespace WinFormsApp11
             listViewBooks.Columns.Add("Автор", 150);
             listViewBooks.Columns.Add("Год", 80);
             listViewBooks.Columns.Add("Статус", 100);
+            listViewBooks.Columns.Add("Взята кем", 150);
         }
 
         private void LoadBooks()
@@ -45,12 +48,14 @@ namespace WinFormsApp11
                         if (parts.Length >= 4)
                         {
                             bool available = parts[4].Trim() != "взята";
+                            string takenBy = parts.Length > 5 ? parts[5].Trim() : "";
                             books.Add(new Book(
                                 parts[0].Trim(),
                                 parts[1].Trim(),
                                 parts[2].Trim(),
                                 parts[3].Trim(),
-                                available));
+                                available,
+                                takenBy));
                         }
                     }
                     ShowBooks();
@@ -72,6 +77,7 @@ namespace WinFormsApp11
                 item.SubItems.Add(book.Author);
                 item.SubItems.Add(book.Year);
                 item.SubItems.Add(book.IsAvailable ? "Доступна" : "Взята");
+                item.SubItems.Add(book.IsAvailable ? "" : book.TakenBy); 
                 item.BackColor = book.IsAvailable ? Color.LightGreen : Color.LightPink;
                 listViewBooks.Items.Add(item);
             }
@@ -85,7 +91,7 @@ namespace WinFormsApp11
                 foreach (Book book in books)
                 {
                     string status = book.IsAvailable ? "доступна" : "взята";
-                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status}");
+                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status},{book.TakenBy}");
                 }
                 File.WriteAllLines(BooksFile, lines);
             }
