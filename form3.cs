@@ -11,15 +11,12 @@ namespace WinFormsApp11
         private const string UsersFile = "users.txt";
         private List<User> users = new List<User>();
         private int selectedUserIndex;
+        private string currentUser;
 
-        private void Form3_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        public Form3()
+        public Form3(string username)
         {
             InitializeComponent();
+            currentUser = username;
             cmbRole.Items.AddRange(new string[] { "admin", "worker", "client" });
             SetupListView();
             LoadUsers();
