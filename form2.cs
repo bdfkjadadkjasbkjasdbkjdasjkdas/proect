@@ -90,17 +90,17 @@ namespace WinFormsApp11
 
                     if (userRole == "admin")
                     {
-                        Form3 adminForm = new Form3();
+                        Form3 adminForm = new Form3(username);
                         adminForm.Show();
                     }
                     else if (userRole == "client")
                     {
-                        Form4 clientForm = new Form4();
+                        Form4 clientForm = new Form4(username); 
                         clientForm.Show();
                     }
                     else if (userRole == "worker")
                     {
-                        Form5 workerForm = new Form5();
+                        Form5 workerForm = new Form5(username); 
                         workerForm.Show();
                     }
 
