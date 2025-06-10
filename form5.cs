@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using WinFormsApp11;
+using WinFormsApp5;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form5 : Form
     {
@@ -25,12 +25,15 @@ namespace WinFormsApp11
         private void SetupListView()
         {
             listViewBooks.View = View.Details;
+            listViewBooks.Columns.Clear();
             listViewBooks.Columns.Add("Номер", 100);
             listViewBooks.Columns.Add("Название", 200);
             listViewBooks.Columns.Add("Автор", 150);
             listViewBooks.Columns.Add("Год", 80);
             listViewBooks.Columns.Add("Статус", 100);
             listViewBooks.Columns.Add("Взята кем", 150);
+            listViewBooks.Columns.Add("Дата взятия", 100);
+            listViewBooks.Columns.Add("Вернуть до", 100);
         }
 
         private void LoadBooks()
@@ -47,15 +50,26 @@ namespace WinFormsApp11
                         string[] parts = line.Split(',');
                         if (parts.Length >= 4)
                         {
-                            bool available = parts[4].Trim() != "взята";
+                            bool available = parts.Length > 4 ? parts[4].Trim() != "взята" : true;
                             string takenBy = parts.Length > 5 ? parts[5].Trim() : "";
+
+                            DateTime? takenDate = null;
+                            if (parts.Length > 6 && !string.IsNullOrEmpty(parts[6]))
+                                takenDate = DateTime.Parse(parts[6]);
+
+                            DateTime? dueDate = null;
+                            if (parts.Length > 7 && !string.IsNullOrEmpty(parts[7]))
+                                dueDate = DateTime.Parse(parts[7]);
+
                             books.Add(new Book(
                                 parts[0].Trim(),
                                 parts[1].Trim(),
                                 parts[2].Trim(),
                                 parts[3].Trim(),
                                 available,
-                                takenBy));
+                                takenBy,
+                                takenDate,
+                                dueDate));
                         }
                     }
                     ShowBooks();
@@ -77,7 +91,9 @@ namespace WinFormsApp11
                 item.SubItems.Add(book.Author);
                 item.SubItems.Add(book.Year);
                 item.SubItems.Add(book.IsAvailable ? "Доступна" : "Взята");
-                item.SubItems.Add(book.IsAvailable ? "" : book.TakenBy); 
+                item.SubItems.Add(book.IsAvailable ? "" : book.TakenBy);
+                item.SubItems.Add(book.IsAvailable ? "" : book.TakenDate?.ToString("dd.MM.yyyy"));
+                item.SubItems.Add(book.IsAvailable ? "" : book.DueDate?.ToString("dd.MM.yyyy"));
                 item.BackColor = book.IsAvailable ? Color.LightGreen : Color.LightPink;
                 listViewBooks.Items.Add(item);
             }
@@ -91,7 +107,9 @@ namespace WinFormsApp11
                 foreach (Book book in books)
                 {
                     string status = book.IsAvailable ? "доступна" : "взята";
-                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status},{book.TakenBy}");
+                    string takenDateStr = book.TakenDate?.ToString("yyyy-MM-dd") ?? "";
+                    string dueDateStr = book.DueDate?.ToString("yyyy-MM-dd") ?? "";
+                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status},{book.TakenBy},{takenDateStr},{dueDateStr}");
                 }
                 File.WriteAllLines(BooksFile, lines);
             }
@@ -123,18 +141,18 @@ namespace WinFormsApp11
             txtYear.Clear();
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void btnRefresh_Click_1(object sender, EventArgs e)
         {
             LoadBooks();
             ClearFields();
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void btnAdd_Click_1(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
-    string.IsNullOrWhiteSpace(txtTitle.Text) ||
-    string.IsNullOrWhiteSpace(txtAuthor.Text) ||
-    string.IsNullOrWhiteSpace(txtYear.Text))
+                string.IsNullOrWhiteSpace(txtTitle.Text) ||
+                string.IsNullOrWhiteSpace(txtAuthor.Text) ||
+                string.IsNullOrWhiteSpace(txtYear.Text))
             {
                 MessageBox.Show("Заполните все поля!");
                 return;
@@ -154,9 +172,8 @@ namespace WinFormsApp11
             MessageBox.Show("Книга добавлена!");
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void btnEdit_Click_1(object sender, EventArgs e)
         {
-
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
                 string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
@@ -180,22 +197,6 @@ namespace WinFormsApp11
 
         private void btnDelete_Click_1(object sender, EventArgs e)
         {
-
-            if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                books.RemoveAt(selectedBookIndex);
-                SaveBooks();
-                ShowBooks();
-                ClearFields();
-                selectedBookIndex = 0;
-                MessageBox.Show("Книга удалена!");
-            }
-        }
-
-        private void btnDelete_Click(object sender, EventArgs e)
-        {
-
             if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
                 MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
