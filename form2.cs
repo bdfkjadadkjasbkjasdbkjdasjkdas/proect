@@ -10,7 +10,8 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using static System.Windows.Forms.DataFormats;
 
-namespace WinFormsApp11
+
+namespace WinFormsApp5
 {
     public partial class Form2 : Form
     {
@@ -20,6 +21,10 @@ namespace WinFormsApp11
         {
             InitializeComponent();
             labelRole.Visible = false;
+        }
+
+        private void Form6_Load(object sender, EventArgs e)
+        {
         }
 
         private string GetHashSHA256(string plainText)
@@ -66,7 +71,8 @@ namespace WinFormsApp11
             }
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+
+        private void LoginBtn_Click(object sender, EventArgs e)
         {
             try
             {
@@ -95,12 +101,12 @@ namespace WinFormsApp11
                     }
                     else if (userRole == "client")
                     {
-                        Form4 clientForm = new Form4(username); 
+                        Form4 clientForm = new Form4(username);
                         clientForm.Show();
                     }
                     else if (userRole == "worker")
                     {
-                        Form5 workerForm = new Form5(username); 
+                        Form5 workerForm = new Form5(username);
                         workerForm.Show();
                     }
 
@@ -120,8 +126,10 @@ namespace WinFormsApp11
             }
         }
 
+
         private void Form2_Load(object sender, EventArgs e)
         {
+
         }
     }
 }
