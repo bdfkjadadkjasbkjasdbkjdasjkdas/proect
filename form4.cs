@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 
-namespace WinFormsApp11
+namespace WinFormsApp5
 {
     public partial class Form4 : Form
     {
@@ -19,6 +20,7 @@ namespace WinFormsApp11
             LoadBooks();
         }
 
+
         private void SetupListViewColumns()
         {
             listViewBooks.View = View.Details;
@@ -28,7 +30,7 @@ namespace WinFormsApp11
             listViewBooks.Columns.Add("Автор", 200);
             listViewBooks.Columns.Add("Год", 150);
             listViewBooks.Columns.Add("Статус", 100);
-            listViewBooks.Columns.Add("Взята кем", 150); 
+            listViewBooks.Columns.Add("Взята кем", 150);
         }
 
         private void LoadBooks()
@@ -78,7 +80,7 @@ namespace WinFormsApp11
                 item.SubItems.Add(book.Author);
                 item.SubItems.Add(book.Year);
                 item.SubItems.Add(book.IsAvailable ? "Доступна" : "Взята");
-                item.SubItems.Add(book.IsAvailable ? "" : book.TakenBy); 
+                item.SubItems.Add(book.IsAvailable ? "" : book.TakenBy);
                 item.BackColor = book.IsAvailable ? Color.LightGreen : Color.LightPink;
                 listViewBooks.Items.Add(item);
             }
@@ -92,7 +94,7 @@ namespace WinFormsApp11
                 foreach (var book in books)
                 {
                     string status = !book.IsAvailable ? "взята" : "доступна";
-                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status},{book.TakenBy}");
+                    lines.Add($"{book.Id},{book.Title},{book.Author},{book.Year},{status},{book.TakenBy},{book.TakenDate},{book.DueDate}");
                 }
                 File.WriteAllLines(BooksFile, lines);
             }
@@ -103,34 +105,7 @@ namespace WinFormsApp11
             }
         }
 
-        private void btnTakeBook_Click(object sender, EventArgs e)
-        {
-            if (listViewBooks.SelectedItems.Count > 0)
-            {
-                int selectedIndex = listViewBooks.SelectedIndices[0];
-                if (books[selectedIndex].IsAvailable)
-                {
-                    books[selectedIndex].IsAvailable = false;
-                    books[selectedIndex].TakenBy = currentUser; 
-                    SaveBooks();
-                    RefreshBookList();
-                    MessageBox.Show($"Книга успешно взята пользователем {currentUser}", "Успех",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Эта книга уже взята!", "Информация",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите книгу!", "Предупреждение",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        private void btnReturnBook_Click(object sender, EventArgs e)
+        private void btnReturnBook_Click_1(object sender, EventArgs e)
         {
             if (listViewBooks.SelectedItems.Count > 0)
             {
@@ -141,6 +116,8 @@ namespace WinFormsApp11
                     {
                         books[selectedIndex].IsAvailable = true;
                         books[selectedIndex].TakenBy = "";
+                        books[selectedIndex].TakenDate = null;
+                        books[selectedIndex].DueDate = null;
                         SaveBooks();
                         RefreshBookList();
                         MessageBox.Show("Книга успешно возвращена", "Успех",
@@ -164,6 +141,35 @@ namespace WinFormsApp11
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void btnTakeBook_Click_1(object sender, EventArgs e)
+        {
+            if (listViewBooks.SelectedItems.Count > 0)
+            {
+                int selectedIndex = listViewBooks.SelectedIndices[0];
+                if (books[selectedIndex].IsAvailable)
+                {
+                    books[selectedIndex].IsAvailable = false;
+                    books[selectedIndex].TakenBy = currentUser;
+                    books[selectedIndex].TakenDate = DateTime.Now;
+                    books[selectedIndex].DueDate = DateTime.Now.AddDays(14); 
+                    SaveBooks();
+                    RefreshBookList();
+                    MessageBox.Show($"Книга успешно взята пользователем {currentUser}. Верните до {books[selectedIndex].DueDate?.ToString("dd.MM.yyyy")}",
+                        "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Эта книга уже взята!", "Информация",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите книгу!", "Предупреждение",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 
     public class Book
@@ -174,8 +180,12 @@ namespace WinFormsApp11
         public string Year { get; set; }
         public bool IsAvailable { get; set; }
         public string TakenBy { get; set; }
+        public DateTime? TakenDate { get; set; }
+        public DateTime? DueDate { get; set; }
 
-        public Book(string id, string title, string author, string year, bool isAvailable = true, string takenBy = "")
+        public Book(string id, string title, string author, string year,
+                   bool isAvailable = true, string takenBy = "",
+                   DateTime? takenDate = null, DateTime? dueDate = null)
         {
             Id = id;
             Title = title;
@@ -183,6 +193,8 @@ namespace WinFormsApp11
             Year = year;
             IsAvailable = isAvailable;
             TakenBy = takenBy;
+            TakenDate = takenDate;
+            DueDate = dueDate;
         }
     }
 }
