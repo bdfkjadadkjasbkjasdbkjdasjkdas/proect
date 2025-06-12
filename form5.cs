@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using WinFormsApp5;
+using WinFormsApp11;
 
-namespace WinFormsApp5
+namespace WinFormsApp11
 {
     public partial class Form5 : Form
     {
@@ -141,26 +141,46 @@ namespace WinFormsApp5
             txtYear.Clear();
         }
 
-        private void btnRefresh_Click_1(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadBooks();
             ClearFields();
         }
 
-        private void btnAdd_Click_1(object sender, EventArgs e)
+
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
                 string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
                 string.IsNullOrWhiteSpace(txtYear.Text))
             {
-                MessageBox.Show("Заполните все поля!");
+                MessageBox.Show("Заполните все поля!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtId.Text, out int id))
+            {
+                MessageBox.Show("Номер книги должен быть числом!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtId.Focus();
+                return;
+            }
+
+            if (!int.TryParse(txtYear.Text, out int year) || year < 1000 || year > DateTime.Now.Year + 1)
+            {
+                MessageBox.Show($"Год должен быть числом между 1000 и {DateTime.Now.Year + 1}!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtYear.Focus();
                 return;
             }
 
             if (books.Exists(b => b.Id == txtId.Text))
             {
-                MessageBox.Show("Книга с таким номером уже есть!");
+                MessageBox.Show("Книга с таким номером уже есть!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtId.Focus();
                 return;
             }
 
@@ -169,17 +189,51 @@ namespace WinFormsApp5
             SaveBooks();
             ShowBooks();
             ClearFields();
-            MessageBox.Show("Книга добавлена!");
+            MessageBox.Show("Книга добавлена!", "Успех",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnEdit_Click_1(object sender, EventArgs e)
+        private void btnEdit_Click(object sender, EventArgs e)
         {
+            if (listViewBooks.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Выберите книгу для редактирования!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtId.Text) ||
                 string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
                 string.IsNullOrWhiteSpace(txtYear.Text))
             {
-                MessageBox.Show("Заполните все поля!");
+                MessageBox.Show("Заполните все поля!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtId.Text, out int id))
+            {
+                MessageBox.Show("Номер книги должен быть числом!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtId.Focus();
+                return;
+            }
+
+            if (!int.TryParse(txtYear.Text, out int year) || year < 1000 || year > DateTime.Now.Year + 1)
+            {
+                MessageBox.Show($"Год должен быть числом между 1000 и {DateTime.Now.Year + 1}!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtYear.Focus();
+                return;
+            }
+
+            string originalId = books[selectedBookIndex].Id;
+            if (originalId != txtId.Text && books.Exists(b => b.Id == txtId.Text))
+            {
+                MessageBox.Show("Книга с таким номером уже есть!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtId.Focus();
                 return;
             }
 
@@ -192,13 +246,15 @@ namespace WinFormsApp5
             ShowBooks();
             ClearFields();
             selectedBookIndex = 0;
-            MessageBox.Show("Изменения сохранены!");
+            MessageBox.Show("Изменения сохранены!", "Успех",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnDelete_Click_1(object sender, EventArgs e)
+
+        private void btnDelete_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
+    MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 books.RemoveAt(selectedBookIndex);
                 SaveBooks();
