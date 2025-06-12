@@ -5,13 +5,12 @@ using System.Security.Cryptography;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using WinFormsApp5;
+using WinFormsApp11;
 using System.Runtime.InteropServices.JavaScript;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-
-namespace WinFormsApp5
+namespace WinFormsApp11
 {
     public partial class Form1 : Form
     {
@@ -19,13 +18,6 @@ namespace WinFormsApp5
         {
             InitializeComponent();
             cmbRole.Items.AddRange(new string[] { "admin", "worker", "client" });
-            cmbRole.SelectedIndex = 0;
-        }
-
-        private void ClearRegistrationFields()
-        {
-            txtUsername.Clear();
-            txtPassword.Clear();
             cmbRole.SelectedIndex = 0;
         }
 
@@ -51,6 +43,12 @@ namespace WinFormsApp5
             }
         }
 
+        private void btnCity_Click(object sender, EventArgs e)
+        {
+            FindCity();
+        }
+
+
         private string GetHashSHA256(string plainText)
         {
             string hashText = "";
@@ -64,6 +62,13 @@ namespace WinFormsApp5
                 }
             }
             return hashText;
+        }
+
+        private void ClearRegistrationFields()
+        {
+            txtUsername.Clear();
+            txtPassword.Clear();
+            cmbRole.SelectedIndex = 0;
         }
 
         private bool UserExists(string username)
@@ -95,7 +100,7 @@ namespace WinFormsApp5
             File.AppendAllText(filePath, userRecord + Environment.NewLine);
         }
 
-        private void btnRegister_Click_1(object sender, EventArgs e)
+        private void btnRegister_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text;
             string password = txtPassword.Text;
@@ -112,56 +117,56 @@ namespace WinFormsApp5
             }
 
             if (password.Length < 6)
-                {
-                    MessageBox.Show("Пароль должен содержать минимум 6 символов",
-                                    "Ошибка",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (role != "admin" && role != "client" && role != "worker")
-                {
-                    MessageBox.Show("Роль может быть только 'admin', 'client' или 'worker'",
-                                    "Недопустимая роль",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                    return;
-                }
-
-                try
-                {
-                    if (UserExists(username))
-                    {
-                        MessageBox.Show("Пользователь с таким именем уже существует",
-                                        "Ошибка",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Error);
-                        ClearRegistrationFields();
-                        return;
-                    }
-
-                    RegisterUser(username, password, role);
-
-                    MessageBox.Show("Регистрация прошла успешно! Теперь вы можете войти.",
-                                    "Успех",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information);
-
-                    Form2 Forms = new Form2();
-                    Forms.Show();
-                    this.Hide();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка при регистрации: {ex.Message}",
-                                    "Ошибка",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                }
+            {
+                MessageBox.Show("Пароль должен содержать минимум 6 символов",
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
             }
 
-            private void btnLogins_Click(object sender, EventArgs e)
+            if (role != "admin" && role != "client" && role != "worker")
+            {
+                MessageBox.Show("Роль может быть только 'admin', 'client' или 'worker'",
+                                "Недопустимая роль",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                if (UserExists(username))
+                {
+                    MessageBox.Show("Пользователь с таким именем уже существует",
+                                    "Ошибка",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                    ClearRegistrationFields();
+                    return;
+                }
+
+                RegisterUser(username, password, role);
+
+                MessageBox.Show("Регистрация прошла успешно! Теперь вы можете войти.",
+                                "Успех",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+
+                Form2 Forms = new Form2();
+                Forms.Show();
+                this.Hide();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при регистрации: {ex.Message}",
+                                "Ошибка",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
         {
             Form2 Forms = new Form2();
             Forms.Show();
