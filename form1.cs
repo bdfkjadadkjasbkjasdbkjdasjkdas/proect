@@ -36,6 +36,28 @@ namespace WinFormsApp11
 
                 lbl_name.Text = lbl_name.Text + jobject["city"]?.ToString();
 
+                if (lbl_name.Text == "Krasnoyarsk")
+                {
+                    lbl_City.Text = "В твоем городе есть - Научная библиотека Сибирского федерального университета";
+                }
+                if (lbl_name.Text == "Moscow")
+                {
+                    lbl_City.Text = "В твоем городе есть - Российская государственная библиотека";
+                }
+                if (lbl_name.Text == "Yekaterinburg")
+                {
+                    lbl_City.Text = "В твоем городе есть - Свердловская областная универсальная научная библиотека им. В.Г. Белинского";
+                }
+                if (lbl_name.Text == "Novosibirsk")
+                {
+                    lbl_City.Text = "В твоем городе есть - Государственная публичная научно-техническая библиотека СО РАН";
+                }
+                if (lbl_name.Text == "Saint Petersburg")
+                {
+                    lbl_City.Text = "В твоем городе есть - Российская национальная библиотека";
+                }
+
+
             }
             catch (Exception ex)
             {
