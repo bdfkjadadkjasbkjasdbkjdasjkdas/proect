@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using WinFormsApp11;
 
 namespace WinFormsApp11
 {
@@ -11,7 +10,7 @@ namespace WinFormsApp11
     {
         private const string BooksFile = "books.txt";
         private List<Book> books = new List<Book>();
-        private int selectedBookIndex;
+        private int selectedBookIndex = -1; 
         private string currentUser;
 
         public Form5(string username)
@@ -34,6 +33,17 @@ namespace WinFormsApp11
             listViewBooks.Columns.Add("Взята кем", 150);
             listViewBooks.Columns.Add("Дата взятия", 100);
             listViewBooks.Columns.Add("Вернуть до", 100);
+
+            listViewBooks.MouseClick += ListViewBooks_MouseClick;
+        }
+
+        private void ListViewBooks_MouseClick(object sender, MouseEventArgs e)
+        {
+            var hitTest = listViewBooks.HitTest(e.Location);
+            if (hitTest.Item != null)
+            {
+                selectedBookIndex = hitTest.Item.Index;
+            }
         }
 
         private void LoadBooks()
@@ -42,6 +52,7 @@ namespace WinFormsApp11
             {
                 books.Clear();
                 listViewBooks.Items.Clear();
+                selectedBookIndex = -1;
 
                 if (File.Exists(BooksFile))
                 {
@@ -139,6 +150,7 @@ namespace WinFormsApp11
             txtTitle.Clear();
             txtAuthor.Clear();
             txtYear.Clear();
+            selectedBookIndex = -1; 
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
@@ -146,7 +158,6 @@ namespace WinFormsApp11
             LoadBooks();
             ClearFields();
         }
-
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
@@ -160,9 +171,9 @@ namespace WinFormsApp11
                 return;
             }
 
-            if (!int.TryParse(txtId.Text, out int id))
+            if (!int.TryParse(txtId.Text, out int id) || id <= 0)
             {
-                MessageBox.Show("Номер книги должен быть числом!", "Ошибка",
+                MessageBox.Show("Номер книги должен быть положительным числом!", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtId.Focus();
                 return;
@@ -195,7 +206,7 @@ namespace WinFormsApp11
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (listViewBooks.SelectedItems.Count == 0)
+            if (selectedBookIndex == -1)
             {
                 MessageBox.Show("Выберите книгу для редактирования!", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -212,9 +223,9 @@ namespace WinFormsApp11
                 return;
             }
 
-            if (!int.TryParse(txtId.Text, out int id))
+            if (!int.TryParse(txtId.Text, out int id) || id <= 0)
             {
-                MessageBox.Show("Номер книги должен быть числом!", "Ошибка",
+                MessageBox.Show("Номер книги должен быть положительным числом!", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtId.Focus();
                 return;
@@ -237,31 +248,45 @@ namespace WinFormsApp11
                 return;
             }
 
-            books[selectedBookIndex].Id = txtId.Text;
-            books[selectedBookIndex].Title = txtTitle.Text;
-            books[selectedBookIndex].Author = txtAuthor.Text;
-            books[selectedBookIndex].Year = txtYear.Text;
+            bool wasAvailable = books[selectedBookIndex].IsAvailable;
+            string takenBy = books[selectedBookIndex].TakenBy;
+            DateTime? takenDate = books[selectedBookIndex].TakenDate;
+            DateTime? dueDate = books[selectedBookIndex].DueDate;
+
+            books[selectedBookIndex] = new Book(
+                txtId.Text,
+                txtTitle.Text,
+                txtAuthor.Text,
+                txtYear.Text,
+                wasAvailable,
+                takenBy,
+                takenDate,
+                dueDate);
 
             SaveBooks();
             ShowBooks();
-            ClearFields();
-            selectedBookIndex = 0;
             MessageBox.Show("Изменения сохранены!", "Успех",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            if (selectedBookIndex == -1)
+            {
+                MessageBox.Show("Выберите книгу для удаления!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (MessageBox.Show("Удалить эту книгу?", "Подтверждение",
-    MessageBoxButtons.YesNo) == DialogResult.Yes)
+                MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 books.RemoveAt(selectedBookIndex);
                 SaveBooks();
                 ShowBooks();
                 ClearFields();
-                selectedBookIndex = 0;
-                MessageBox.Show("Книга удалена!");
+                MessageBox.Show("Книга удалена!", "Успех",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
