@@ -10,7 +10,7 @@ namespace WinFormsApp11
     {
         private const string UsersFile = "users.txt";
         private List<User> users = new List<User>();
-        private int selectedUserIndex;
+        private int selectedUserIndex = -1; // Инициализируем как -1 (нет выбора)
         private string currentUser;
 
         public Form3(string username)
@@ -28,6 +28,17 @@ namespace WinFormsApp11
             listViewUsers.Columns.Add("Логин", 150);
             listViewUsers.Columns.Add("Пароль", 150);
             listViewUsers.Columns.Add("Роль", 100);
+
+            listViewUsers.MouseClick += ListViewUsers_MouseClick;
+        }
+
+        private void ListViewUsers_MouseClick(object sender, MouseEventArgs e)
+        {
+            var hitTest = listViewUsers.HitTest(e.Location);
+            if (hitTest.Item != null)
+            {
+                selectedUserIndex = hitTest.Item.Index;
+            }
         }
 
         private void LoadUsers()
@@ -36,6 +47,7 @@ namespace WinFormsApp11
             {
                 users.Clear();
                 listViewUsers.Items.Clear();
+                selectedUserIndex = -1; 
 
                 if (File.Exists(UsersFile))
                 {
@@ -58,7 +70,6 @@ namespace WinFormsApp11
                 MessageBox.Show("Ошибка загрузки: " + ex.Message);
             }
         }
-
 
         private void ShowUsers()
         {
@@ -112,6 +123,7 @@ namespace WinFormsApp11
         {
             txtUsername.Clear();
             txtPassword.Clear();
+            selectedUserIndex = -1;
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
@@ -150,6 +162,11 @@ namespace WinFormsApp11
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
+            if (selectedUserIndex == -1)
+            {
+                MessageBox.Show("Выберите пользователя для редактирования!");
+                return;
+            }
 
             if (string.IsNullOrWhiteSpace(txtUsername.Text) ||
                 string.IsNullOrWhiteSpace(txtPassword.Text) ||
@@ -159,18 +176,29 @@ namespace WinFormsApp11
                 return;
             }
 
+
+            if (users.Exists(u => u.Username == txtUsername.Text && users.IndexOf(u) != selectedUserIndex))
+            {
+                MessageBox.Show("Пользователь с таким логином уже существует!");
+                return;
+            }
+
             users[selectedUserIndex].Username = txtUsername.Text;
             users[selectedUserIndex].Password = txtPassword.Text;
             users[selectedUserIndex].Role = cmbRole.SelectedItem.ToString();
 
             SaveUsers();
             ShowUsers();
-            ClearFields();
             MessageBox.Show("Изменения сохранены!");
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            if (selectedUserIndex == -1)
+            {
+                MessageBox.Show("Выберите пользователя для удаления!");
+                return;
+            }
 
             if (users[selectedUserIndex].Role == "admin")
             {
