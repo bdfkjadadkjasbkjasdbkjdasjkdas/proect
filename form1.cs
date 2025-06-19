@@ -40,19 +40,19 @@ namespace WinFormsApp11
                 {
                     lbl_City.Text = "В твоем городе есть - Научная библиотека Сибирского федерального университета";
                 }
-                if (lbl_name.Text == "Moscow")
+                else if (lbl_name.Text == "Moscow")
                 {
                     lbl_City.Text = "В твоем городе есть - Российская государственная библиотека";
                 }
-                if (lbl_name.Text == "Yekaterinburg")
+                else if (lbl_name.Text == "Yekaterinburg")
                 {
                     lbl_City.Text = "В твоем городе есть - Свердловская областная универсальная научная библиотека им. В.Г. Белинского";
                 }
-                if (lbl_name.Text == "Novosibirsk")
+                else if (lbl_name.Text == "Novosibirsk")
                 {
                     lbl_City.Text = "В твоем городе есть - Государственная публичная научно-техническая библиотека СО РАН";
                 }
-                if (lbl_name.Text == "Saint Petersburg")
+                else if (lbl_name.Text == "Saint Petersburg")
                 {
                     lbl_City.Text = "В твоем городе есть - Российская национальная библиотека";
                 }
@@ -61,7 +61,7 @@ namespace WinFormsApp11
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
 
@@ -106,7 +106,7 @@ namespace WinFormsApp11
             foreach (string user in existingUsers)
             {
                 string[] parts = user.Split(',');
-                if (parts.Length > 0 && parts[0].Equals(username, StringComparison.OrdinalIgnoreCase))
+                if (parts.Length > 0 && parts[0] == username)
                 {
                     return true;
                 }
