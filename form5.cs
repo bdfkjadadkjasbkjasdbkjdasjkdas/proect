@@ -130,20 +130,6 @@ namespace WinFormsApp11
             }
         }
 
-        private void listViewBooks_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listViewBooks.SelectedItems.Count > 0)
-            {
-                selectedBookIndex = listViewBooks.SelectedIndices[0];
-                Book selected = books[selectedBookIndex];
-
-                txtId.Text = selected.Id;
-                txtTitle.Text = selected.Title;
-                txtAuthor.Text = selected.Author;
-                txtYear.Text = selected.Year;
-            }
-        }
-
         private void ClearFields()
         {
             txtId.Clear();
