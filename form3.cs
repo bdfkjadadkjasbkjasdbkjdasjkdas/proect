@@ -10,7 +10,7 @@ namespace WinFormsApp11
     {
         private const string UsersFile = "users.txt";
         private List<User> users = new List<User>();
-        private int selectedUserIndex = -1; // Инициализируем как -1 (нет выбора)
+        private int selectedUserIndex = -1; 
         private string currentUser;
 
         public Form3(string username)
@@ -103,19 +103,6 @@ namespace WinFormsApp11
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка сохранения: " + ex.Message);
-            }
-        }
-
-        private void listViewUsers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listViewUsers.SelectedItems.Count > 0)
-            {
-                selectedUserIndex = listViewUsers.SelectedIndices[0];
-                User selected = users[selectedUserIndex];
-
-                txtUsername.Text = selected.Username;
-                txtPassword.Text = selected.Password;
-                cmbRole.SelectedItem = selected.Role;
             }
         }
 
